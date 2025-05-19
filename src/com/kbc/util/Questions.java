@@ -1,9 +1,12 @@
-package com.kbc.model;
+package com.kbc.util;
 
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import com.kbc.model.Question;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 

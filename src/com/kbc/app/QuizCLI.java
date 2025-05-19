@@ -1,14 +1,21 @@
 package com.kbc.app;
 
+import com.kbc.FiftyFifty;
 import com.kbc.model.Question;
 import com.kbc.model.User;
+import java.util.List;
+import java.util.Scanner;
 
 public class QuizCLI {
     private final User user;
     private Question q;
+    private static FiftyFifty fiftyFifty;
+    private static Scanner scanner;
 
     public QuizCLI(User user) {
         this.user = user;
+        this.fiftyFifty = FiftyFifty.getInstance();
+        this.scanner = new Scanner(System.in);
     }
 
     public static void rules1() {
@@ -76,7 +83,53 @@ public class QuizCLI {
         }
     }
 
-    public void play(){
+    public static void handleLifeline(Question currentQuestion) {
+        System.out.println("\nAvailable Lifelines:");
+        System.out.println("F - 50:50 (Eliminate two wrong options)");
+        System.out.println("A - Audience Poll");
+        System.out.println("Q - Flip Question");
+        System.out.print("\nEnter your choice (F/A/Q): ");
+        
+        String choice = scanner.nextLine().toUpperCase();
+        
+        switch (choice) {
+            case "F":
+                if (fiftyFifty.isLifelineAvailable()) {
+                    // Set current question data
+                    fiftyFifty.setCurrentQuestion(
+                        currentQuestion.getText(),
+                        currentQuestion.getOptions(),
+                        currentQuestion.getCorrectIdx()
+                    );
+                    
+                    // Use 50-50
+                    List<String> remainingOptions = fiftyFifty.useFiftyFifty();
+                    System.out.println("\nRemaining options after 50-50:");
+                    char[] letters = {'A', 'B', 'C', 'D'};
+                    for (int i = 0; i < remainingOptions.size(); i++) {
+                        String option = remainingOptions.get(i);
+                        if (!option.isEmpty()) {
+                            System.out.printf("%c) %s%n", letters[i], option);
+                        }
+                    }
+                } else {
+                    System.out.println("50-50 lifeline has already been used!");
+                }
+                break;
+            case "A":
+                // TODO: Implement Audience Poll
+                System.out.println("Audience Poll lifeline coming soon!");
+                break;
+            case "Q":
+                // TODO: Implement Flip Question
+                System.out.println("Flip Question lifeline coming soon!");
+                break;
+            default:
+                System.out.println("Invalid lifeline choice!");
+        }
+    }
+
+    public void play() {
         System.out.println("\nLet's play, " + user.getUsername() + "!");
         rules1();
         rules2();

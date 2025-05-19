@@ -4,7 +4,7 @@ import com.kbc.model.User;
 import com.kbc.util.QuizManager;
 
 public class Main {
-     public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         System.out.println("Welcome to KBC Quiz Game!");
 
         // Initialize authentication

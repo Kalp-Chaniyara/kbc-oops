@@ -1,7 +1,7 @@
 package com.kbc.util;
 
+import com.kbc.app.QuizCLI;
 import com.kbc.model.Question;
-import com.kbc.model.Questions;
 import com.kbc.model.User;
 import java.util.List;
 import java.util.Scanner;
@@ -26,10 +26,20 @@ public class QuizManager {
             String userInput = scanner.nextLine();
             System.out.println();
             
-            if (!questions.get(i).checkAnswer(userInput)) {
+            if(userInput.equals("LifeLine")){
+                QuizCLI.handleLifeline(questions.get(i));
+                String userInput2 = scanner.nextLine();
+                if(!questions.get(i).checkAnswer(userInput2)){
+                    System.out.println("Wrong answer, Game is over now !!!");
+                    break;
+                }else{
+                    System.out.println("YES, You are correct. Congratulations !!!");
+                    score++;
+                }
+            } else if (!questions.get(i).checkAnswer(userInput)) {
                 System.out.println("Wrong answer, Game is over now !!!");
                 break;
-            } else {
+            } else{
                 System.out.println("YES, You are correct. Congratulations !!!");
                 score++;
             }
