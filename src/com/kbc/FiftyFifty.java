@@ -4,15 +4,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class FiftyFifty {
-    private boolean isUsed;
+import com.kbc.model.Lifeline;
+
+public class FiftyFifty implements Lifeline {
+    private boolean used;
     private static FiftyFifty instance;
-    private String currentQuestion;
-    private List<String> currentOptions;
+    private String question;
+    private List<String> options;
     private int correctIndex;
 
     private FiftyFifty() {
-        this.isUsed = false;
+        this.used = false;
     }
 
     public static FiftyFifty getInstance() {
@@ -22,36 +24,43 @@ public class FiftyFifty {
         return instance;
     }
 
+    @Override
     public void setCurrentQuestion(String question, List<String> options, int correctIdx) {
-        this.currentQuestion = question;
-        this.currentOptions = new ArrayList<>(options);
-        this.correctIndex = correctIdx;
-    }
-
-    public boolean isLifelineAvailable() {
-        return !isUsed;
-    }
-
-    public List<String> useFiftyFifty() {
-        if (!isLifelineAvailable()) {
-            System.out.println("50-50 lifeline has already been used!");
-            return currentOptions;
+        if (options == null || options.isEmpty()) {
+            throw new IllegalArgumentException("Options list cannot be null or empty.");
         }
+        if (correctIdx < 0 || correctIdx >= options.size()) {
+            throw new IndexOutOfBoundsException("Correct index is out of range.");
+        }
+        this.question = question;
+        this.options = new ArrayList<>(options);
+        this.correctIndex = correctIdx;
+        this.used = false;
+    }
 
-        if (currentOptions == null || currentOptions.isEmpty()) {
-            System.out.println("No question is currently set!");
-            return new ArrayList<>();
+    @Override
+    public boolean isAvailable() {
+        return !used;
+    }
+
+    @Override
+    public List<String> use() {
+        if (!isAvailable()) {
+            throw new IllegalStateException("50-50 lifeline already used.");
+        }
+        if (options == null) {
+            throw new IllegalStateException("No question has been set.");
         }
 
         // Create a list to store which options to keep (true) or remove (false)
-        List<Boolean> keepOptions = new ArrayList<>(Collections.nCopies(2, false));
+        List<Boolean> keepOptions = new ArrayList<>(Collections.nCopies(options.size(), false));
         
         // Keep the correct answer
         keepOptions.set(correctIndex, true);
         
         // Get all incorrect options
         List<Integer> incorrectIndices = new ArrayList<>();
-        for (int i = 0; i < currentOptions.size(); i++) {
+        for (int i = 0; i < options.size(); i++) {
             if (i != correctIndex) {
                 incorrectIndices.add(i);
             }
@@ -63,21 +72,22 @@ public class FiftyFifty {
         
         // Create the result list maintaining original positions
         List<String> result = new ArrayList<>();
-        for (int i = 0; i < currentOptions.size(); i++) {
+        for (int i = 0; i < options.size(); i++) {
             if (keepOptions.get(i)) {
-                result.add(currentOptions.get(i));
+                result.add(options.get(i));
             } else {
                 result.add("");  // Empty string for removed options
             }
         }
         
-        isUsed = true;
+        used = true;
         return result;
     }
 
+    @Override
     public void reset() {
-        isUsed = false;
-        currentQuestion = null;
-        currentOptions = null;
+        used = false;
+        question = null;
+        options = null;
     }
 }
